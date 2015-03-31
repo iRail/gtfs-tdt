@@ -1,3 +1,9 @@
 /bootstrap/compiled.php
 .env.*.php
 .env.php
+/cookbooks
+/tmp
+.vagrant/
+Cheffile.lock
+tdt/
+
