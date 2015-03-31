@@ -5,5 +5,5 @@
 /tmp
 .vagrant/
 Cheffile.lock
-tdt/
+/tdt/
 
