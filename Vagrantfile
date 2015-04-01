@@ -32,8 +32,8 @@ Vagrant.configure(VAGRANTFILE_API_VERSION) do |config|
       chef.add_recipe "curl"
       chef.add_recipe "tmux"
       chef.add_recipe "vim"
-      chef.add_recipe "postgis"
       chef.add_recipe "git"
+      chef.add_recipe "build-essential"
 
       chef.add_recipe "db"
 

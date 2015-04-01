@@ -3,6 +3,7 @@
 # Recipe:: default
 #
 # Copyright (c) 2015 The Authors, All Rights Reserved.
+root_pass = 'root'
 
 bash "set default locale to UTF-8" do
   code <<-EOH
@@ -19,8 +20,32 @@ template "/home/vagrant/.ssh/config" do
   source "config"
 end
 
+
+template "/home/vagrant/.bash_aliases" do
+  user "vagrant"
+  mode "0644"
+  source ".bash_aliases.erb"
+end
+
+template "/home/vagrant/.bash_profile" do
+  user "vagrant"
+  group "vagrant"
+  source ".bash_profile"
+end
+
 execute "apt-get update"
 package "python-software-properties"
+
+
+# install the software we need
+%w(
+curl
+tmux
+vim
+git
+unzip
+mysql-server
+).each { | pkg | package pkg }
 
 bash "Create mysql database" do
   user "vagrant"
@@ -31,6 +56,7 @@ bash "Create mysql database" do
   echo "create database datatank" | mysql -u root
   EOH
 end
+
 
 bash "Grant mysql database access from everywhere" do
   user "root"
