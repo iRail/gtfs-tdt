@@ -15,6 +15,8 @@ vagrant plugin install vagrant-librarian-chef
 Our custom cookbooks are located in vendor/cookbooks.
 Librarian fetches all the community cookbook dependencies into it's own directory cookbooks.
 
+vagrant plugin install vagrant-bindfs
+
 # Run
 
 vagrant up [ tdt | db ]

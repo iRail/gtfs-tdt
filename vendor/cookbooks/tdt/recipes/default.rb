@@ -4,6 +4,9 @@
 #
 # Copyright (c) 2015 The Authors, All Rights Reserved.
 
+# variables
+root_pass = 'root'
+
 bash "set default locale to UTF-8" do
   code <<-EOH
 update-locale LANG=en_US.UTF-8 LC_ALL=en_US.UTF-8
@@ -111,7 +114,7 @@ end
 mysql_service 'default' do
   port '3306'
   version '5.5'
-  initial_root_password 'change me'
+  initial_root_password root_pass
   action [:create, :start]
 end
 
@@ -121,32 +124,58 @@ mysql_config 'default' do
   action :create
 end
 
-bash "Create database" do
-  user "vagrant"
-  cwd "/vagrant"
-  not_if "echo 'show databases' | mysql -u root | grep datatank"
-  code <<-EOH
-  set -e
-  echo "create database datatank" | mysql -u root
-  EOH
+template "/etc/mysql/my.cnf" do
+  user "root"
+  mode "0644"
+  source 'my.cnf'
 end
 
+# create database on default
+bash 'create database datatank' do
+  not_if "echo 'show databases' | /usr/bin/mysql -u root -h 127.0.0.1 -P 3306 -p#{Shellwords.escape(root_pass)} | grep datatank"
+  code <<-EOF
+  echo 'CREATE DATABASE datatank;' | /usr/bin/mysql -u root -h 127.0.0.1 -P 3306 -p#{Shellwords.escape(root_pass)};
+  EOF
+  action :run
+end
+
+# bash "Create database" do
+#   user "vagrant"
+#   cwd "/vagrant"
+#   not_if "echo 'show databases' | mysql -u root | grep datatank"
+#   code <<-EOH
+#   set -e
+#   echo "create database datatank" | mysql -u root
+#   EOH
+# end
+
+# template "/vagrant/tdt/app/config/database.php" do
+#   user "vagrant"
+#   group "vagrant"
+#   source "database.php"
+# end
+
 template "/vagrant/tdt/app/config/database.php" do
-  user "vagrant"
-  group "vagrant"
+  user "root"
+  mode "0644"
   source "database.php"
 end
 
 template "/vagrant/tdt/app/config/app.php" do
-  user "vagrant"
-  group "vagrant"
+  user "root"
+  mode "0644"
   source "app.php"
 end
 
+# template "/vagrant/tdt/app/config/app.php" do
+#   user "vagrant"
+#   group "vagrant"
+#   source "app.php"
+# end
+
 bash "run composer" do
-  user "vagrant"
   cwd "/vagrant/tdt"
-  not_if "echo 'show tables' | mysql -u root datatank | grep migrations"
+  not_if "echo 'show tables' | /usr/bin/mysql -u root -h 127.0.0.1 -P 3306 -p#{Shellwords.escape(root_pass)} | grep migrations"
   code <<-EOH
   set -e
   export COMPOSER_HOME=/home/vagrant

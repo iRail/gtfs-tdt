@@ -64,7 +64,9 @@ Vagrant.configure(VAGRANTFILE_API_VERSION) do |config|
       vb.customize ["modifyvm", :id, "--memory", "2048"]
     end
 
-    tdt.vm.synced_folder ".", "/vagrant", :nfs => !WINDOWS
+    # tdt.vm.synced_folder ".", "/vagrant", :nfs => !WINDOWS
+    tdt.vm.synced_folder ".", "/vagrant", type: "nfs"
+
     tdt.vm.network :private_network, ip: tdt_ip
     tdt.vm.hostname = tdt_hostname
 
@@ -98,8 +100,7 @@ Vagrant.configure(VAGRANTFILE_API_VERSION) do |config|
         :xdebug_remote_enable => "1",
         :xdebug_remote_port => "9000",
         :xdebug_profiler_output_dir => "/vagrant/xdebug",
-        :xdebug_trace_output_dir => "/vagrant/xdebug",
-        "run_list" => ["recipe[postgresql::server]"]
+        :xdebug_trace_output_dir => "/vagrant/xdebug"
       }
     end
   end
