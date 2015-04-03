@@ -24,14 +24,14 @@ vagrant up [ tdt | db ]
 vagrant ssh tdt|db
 
 # Load Datasources 
+Currently are De Lijn and MivbStib included.
 
-These have to be loaded in the db environment.
+$ vagrant ssh db
+$ cd /vagrant/datasources/
 
-vagrant ssh db
+Execute init.sh of the datasource you want:
+For example 'De Lijn': 
+$ ./delijn/init.sh
 
-Execute init.sh of the datasource you want in the /vagrant/datasources directory:
-For example: 
-$ cd /vagrant/datasources/delijn/
-$ ./init.sh
 
 
