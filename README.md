@@ -27,6 +27,7 @@ vagrant ssh tdt|db
 Currently are De Lijn and MivbStib included.
 
 $ vagrant ssh db
+
 $ cd /vagrant/datasources/
 
 Execute init.sh of the datasource you want:
