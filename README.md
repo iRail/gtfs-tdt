@@ -15,8 +15,6 @@ vagrant plugin install vagrant-librarian-chef
 Our custom cookbooks are located in vendor/cookbooks.
 Librarian fetches all the community cookbook dependencies into it's own directory cookbooks.
 
-vagrant plugin install vagrant-bindfs
-
 # Run
 
 vagrant up [ tdt | db ]
@@ -24,5 +22,17 @@ vagrant up [ tdt | db ]
 # Acces server 
 
 vagrant ssh tdt|db
+
+# Load Datasources 
+Currently are De Lijn and MivbStib included.
+
+$ vagrant ssh db
+
+$ cd /vagrant/datasources/
+
+Execute init.sh of the datasource you want:
+For example 'De Lijn': 
+$ ./delijn/init.sh
+
 
 
