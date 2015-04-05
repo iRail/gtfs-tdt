@@ -15,6 +15,9 @@ vagrant plugin install vagrant-librarian-chef
 Our custom cookbooks are located in vendor/cookbooks.
 Librarian fetches all the community cookbook dependencies into it's own directory cookbooks.
 
+Add The Datatank-ip and -hostname to your hosts-file:
+192.168.70.70	tdt.hub.dev
+
 # Run
 
 vagrant up [ tdt | db ]
