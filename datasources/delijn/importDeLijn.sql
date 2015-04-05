@@ -17,13 +17,13 @@ CREATE TABLE `dlgtfs_agency` (
   `agency_phone` varchar(20) NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
-CREATE TABLE IF NOT EXISTS `dlgtfs_calendar_dates` (
+CREATE TABLE `dlgtfs_calendar_dates` (
   `service_id` INT(11) NOT NULL,
   `date` DATE NOT NULL,
   `exception_type` int(11) NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
-CREATE TABLE IF NOT EXISTS `dlgtfs_routes` (
+CREATE TABLE `dlgtfs_routes` (
   `route_id` INT(11) NOT NULL,
   `agency_id` INT(11) NOT NULL,
   `route_short_name` varchar(10) NOT NULL,
@@ -35,7 +35,7 @@ CREATE TABLE IF NOT EXISTS `dlgtfs_routes` (
   `route_text_color` varchar(6) NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
-CREATE TABLE IF NOT EXISTS `dlgtfs_stop_times` (
+CREATE TABLE `dlgtfs_stop_times` (
   `trip_id` INT(11) NOT NULL,
   `arrival_time` VARCHAR(9),
   `departure_time` VARCHAR(9),
@@ -49,7 +49,7 @@ CREATE TABLE IF NOT EXISTS `dlgtfs_stop_times` (
   `shape_dist_traveled` varchar(10) NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
-CREATE TABLE IF NOT EXISTS `dlgtfs_stops` (
+CREATE TABLE `dlgtfs_stops` (
   `stop_id` INT(11) NOT NULL,
   `stop_code` varchar(10) NOT NULL,
   `stop_name` varchar(255) NOT NULL,
@@ -62,7 +62,7 @@ CREATE TABLE IF NOT EXISTS `dlgtfs_stops` (
   `parent_station` varchar(20) NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
-CREATE TABLE IF NOT EXISTS `dlgtfs_trips` (
+CREATE TABLE `dlgtfs_trips` (
   `route_id` INT(11) NOT NULL ,
   `service_id` INT(11) NOT NULL ,
   `trip_id` INT(11) NOT NULL ,
