@@ -51,7 +51,7 @@ user: admin
 password: admin
 
 Now let's create an API for De Lijn Departures:
-![Picture of Adding Departure API for De Lijn](https://github.com/brechtvdv/gtfs-tdt/master/assets/AddDeLijnDepartures.png "Add Departure")
+![Picture of Adding Departure API for De Lijn](https://raw.githubusercontent.com/brechtvdv/gtfs-tdt/master/assets/AddDeLijnDepartures.png "Add Departure")
 
 You will have to now construct the request towards the expected departures at a bus stop yourself. For example, for 2015-05-10T12:00, for Aalst Gentsestraat, you’ll have to construct: http://tdt.hub.dev/delijn/departures/Aalst%20Gentsestraat/2015/05/10/12/00.json
 
