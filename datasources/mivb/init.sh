@@ -14,3 +14,7 @@ echo "Loading the data in database. Wait little 2 min..."
 mysql --local-infile -u root < /vagrant/datasources/mivb/importMivbStib.sql
 
 echo "Done!"
+
+# Copy MIVBSTIB TDT-resource into installed folder
+echo "Copy TDT-resources into The DataTank installed folder"
+cp -R MIVBSTIBResource ../../tdt/installed
