@@ -20,11 +20,13 @@ Add The Datatank-ip and -hostname to your hosts-file:
 
 # Run
 
-vagrant up [ tdt | db ]
+`vagrant up [ tdt | db ]`
 
 # Acces server 
 
-vagrant ssh tdt|db
+`vagrant ssh db`
+
+`vagrant ssh tdt`
 
 # Load Datasources 
 Currently are De Lijn and MivbStib included.
@@ -36,13 +38,13 @@ For this example we're going to add De Lijn-datasource. Same principle for MivbS
 This will load all the data.
 
 SSH into the db-environment:
-$ vagrant ssh db
+`vagrant ssh db`
 
 Go to De Lijn datasources-folder:
-$ cd /vagrant/datasources/delijn
+`cd /vagrant/datasources/delijn`
 
 Execute init.sh:
-$ ./init.sh
+`./init.sh`
 
 ## Install resource into TDT
 Go to tdt.hub.dev/api/admin in your favourite browser.
