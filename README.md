@@ -10,12 +10,14 @@ Also Chef Development Kit is needed:
 See: https://downloads.chef.io/
 
 Next, install Vagrant Librarian so Chef runs automatically
-vagrant plugin install vagrant-librarian-chef
+
+`vagrant plugin install vagrant-librarian-chef`
 
 Our custom cookbooks are located in vendor/cookbooks.
 Librarian fetches all the community cookbook dependencies into it's own directory cookbooks.
 
 Add The Datatank-ip and -hostname to your hosts-file:
+
 192.168.70.70	tdt.hub.dev
 
 # Run
