@@ -39,6 +39,7 @@ libapache2-mod-php5
 libssl-dev
 mysql-server
 php5-mcrypt
+php5-fpm
 php5-mysql
 php5-curl
 php5-dev
