@@ -40,7 +40,7 @@ class MIVBSTIBStopTimesDao {
      * @param int $saturday Saturday 
      * @param int $sunday Sunday 
      */
-    private $GET_DEPARTURES_BY_NAME_QUERY = "SELECT DISTINCT route.route_short_name, route.route_type, trip.trip_headsign, route.route_color, route.route_text_color, trip.direction_id, times.departure_time_t
+    private $GET_DEPARTURES_BY_NAME_QUERY = "SELECT MIN(DISTINCT route.route_short_name) route_short_name, MIN(route.route_type) route_type, MIN(trip.trip_headsign) trip_headsign, MIN(route.route_color) route_color, MIN(route.route_text_color) route_text_color, MIN(trip.direction_id) direction_id, MIN(times.departure_time_t) departure_time_t
 										FROM mivbstibgtfs_stop_times times
 										JOIN mivbstibgtfs_trips trip
 											ON trip.trip_id = times.trip_id
@@ -48,6 +48,8 @@ class MIVBSTIBStopTimesDao {
 											ON route.route_id = trip.route_id
 										JOIN mivbstibgtfs_calendar calendar
 											ON calendar.service_id = trip.service_id
+                                        LEFT JOIN mivbstibgtfs_calendar_dates calendar_dates
+                                            ON calendar_dates.service_id = calendar.service_id AND calendar_dates.date = STR_TO_DATE(CONCAT(:year, '-', :month, '-', :day), '%Y-%m-%d')
 										INNER JOIN mivbstibgtfs_stops stop
 											ON stop.stop_name = :stationIdentifier
 										WHERE times.stop_id = stop.stop_id
@@ -64,10 +66,12 @@ class MIVBSTIBStopTimesDao {
 											OR calendar.saturday = :saturday
 											OR calendar.sunday = :sunday
 										  )
-										AND (SELECT count(time.stop_id) 
+										AND (SELECT COUNT(time.stop_id) 
 												FROM  mivbstibgtfs_stop_times time
 												WHERE time.trip_id = trip.trip_id
 												AND time.arrival_time_t > times.departure_time_t) > 0
+                                        GROUP BY route.route_short_name, route.route_type, trip.trip_headsign, route.route_color, route.route_text_color, trip.direction_id, times.departure_time_t
+                                        HAVING COUNT(CASE WHEN calendar_dates.`exception_type` = 1 THEN 1 END) > 0 OR COUNT(CASE WHEN calendar_dates.`exception_type` = 2 THEN 1 END) = 0
 										ORDER BY times.departure_time_t
 										LIMIT :offset, :rowcount;";
 										
@@ -87,34 +91,38 @@ class MIVBSTIBStopTimesDao {
      * @param int $saturday Saturday 
      * @param int $sunday Sunday 
      */
-    private $GET_DEPARTURES_BY_ID_QUERY = "SELECT DISTINCT route.route_short_name, route.route_type, trip.trip_headsign, route.route_color, route.route_text_color, trip.direction_id, times.departure_time_t
-										FROM mivbstibgtfs_stop_times times
-										JOIN mivbstibgtfs_trips trip
-											ON trip.trip_id = times.trip_id
-										JOIN mivbstibgtfs_routes route
-											ON route.route_id = trip.route_id
-										JOIN mivbstibgtfs_calendar calendar
-											ON calendar.service_id = trip.service_id
-										WHERE times.stop_id = :stationIdentifier
-										AND times.departure_time_t >= TIME(STR_TO_DATE(CONCAT(:hour, ':', :minute), '%k:%i'))
-										AND calendar.start_date <= STR_TO_DATE(CONCAT(:year, '-', :month, '-', :day), '%Y-%m-%d')
-										  AND calendar.end_date >= STR_TO_DATE(CONCAT(:year, '-', :month, '-', :day), '%Y-%m-%d')
-										  AND 
-										  (
-											calendar.monday = :monday
-											OR calendar.tuesday = :tuesday
-											OR calendar.wednesday = :wednesday
-											OR calendar.thursday = :thursday
-											OR calendar.friday = :friday
-											OR calendar.saturday = :saturday
-											OR calendar.sunday = :sunday
-										  )
-										AND (SELECT count(time.stop_id) 
-												FROM  mivbstibgtfs_stop_times time
-												WHERE time.trip_id = trip.trip_id
-												AND time.arrival_time_t > times.departure_time_t) > 0
-										ORDER BY times.departure_time_t
-										LIMIT :offset, :rowcount;";
+    private $GET_DEPARTURES_BY_ID_QUERY = "SELECT MIN(DISTINCT route.route_short_name) route_short_name, MIN(route.route_type) route_type, MIN(trip.trip_headsign) trip_headsign, MIN(route.route_color) route_color, MIN(route.route_text_color) route_text_color, MIN(trip.direction_id) direction_id, MIN(times.departure_time_t) departure_time_t
+                                        FROM mivbstibgtfs_stop_times times
+                                        JOIN mivbstibgtfs_trips trip
+                                            ON trip.trip_id = times.trip_id
+                                        JOIN mivbstibgtfs_routes route
+                                            ON route.route_id = trip.route_id
+                                        JOIN mivbstibgtfs_calendar calendar
+                                            ON calendar.service_id = trip.service_id
+                                        LEFT JOIN mivbstibgtfs_calendar_dates calendar_dates
+                                            ON calendar_dates.service_id = calendar.service_id AND calendar_dates.date = STR_TO_DATE(CONCAT(:year, '-', :month, '-', :day), '%Y-%m-%d')
+                                        WHERE times.stop_id = :stationIdentifier
+                                        AND times.departure_time_t >= TIME(STR_TO_DATE(CONCAT(:hour, ':', :minute), '%k:%i'))
+                                        AND calendar.start_date <= STR_TO_DATE(CONCAT(:year, '-', :month, '-', :day), '%Y-%m-%d')
+                                          AND calendar.end_date >= STR_TO_DATE(CONCAT(:year, '-', :month, '-', :day), '%Y-%m-%d')
+                                          AND 
+                                          (
+                                            calendar.monday = :monday
+                                            OR calendar.tuesday = :tuesday
+                                            OR calendar.wednesday = :wednesday
+                                            OR calendar.thursday = :thursday
+                                            OR calendar.friday = :friday
+                                            OR calendar.saturday = :saturday
+                                            OR calendar.sunday = :sunday
+                                          )
+                                        AND (SELECT COUNT(time.stop_id) 
+                                                FROM  mivbstibgtfs_stop_times time
+                                                WHERE time.trip_id = trip.trip_id
+                                                AND time.arrival_time_t > times.departure_time_t) > 0
+                                        GROUP BY route.route_short_name, route.route_type, trip.trip_headsign, route.route_color, route.route_text_color, trip.direction_id, times.departure_time_t
+                                        HAVING COUNT(CASE WHEN calendar_dates.`exception_type` = 1 THEN 1 END) > 0 OR COUNT(CASE WHEN calendar_dates.`exception_type` = 2 THEN 1 END) = 0
+                                        ORDER BY times.departure_time_t
+                                        LIMIT :offset, :rowcount;";
 		
     /**
      * Query to get all departures of a given station on a given date and starting from a given time
@@ -132,36 +140,40 @@ class MIVBSTIBStopTimesDao {
      * @param int $saturday Saturday 
      * @param int $sunday Sunday 
      */
-    private $GET_ARRIVALS_BY_NAME_QUERY = "SELECT DISTINCT route.route_short_name, route.route_type, trip.trip_headsign, route.route_color, route.route_text_color, trip.direction_id, times.arrival_time_t
-										FROM mivbstibgtfs_stop_times times
-										JOIN mivbstibgtfs_trips trip
-											ON trip.trip_id = times.trip_id
-										JOIN mivbstibgtfs_routes route
-											ON route.route_id = trip.route_id
-										JOIN mivbstibgtfs_calendar calendar
-											ON calendar.service_id = trip.service_id
-										INNER JOIN mivbstibgtfs_stops stop
-											ON stop.stop_name = :stationIdentifier
-										WHERE times.stop_id = stop.stop_id
-										AND times.arrival_time_t >= TIME(STR_TO_DATE(CONCAT(:hour, ':', :minute), '%k:%i'))
-										AND calendar.start_date <= STR_TO_DATE(CONCAT(:year, '-', :month, '-', :day), '%Y-%m-%d')
-										  AND calendar.end_date >= STR_TO_DATE(CONCAT(:year, '-', :month, '-', :day), '%Y-%m-%d')
-										  AND 
-										  (
-											calendar.monday = :monday
-											OR calendar.tuesday = :tuesday
-											OR calendar.wednesday = :wednesday
-											OR calendar.thursday = :thursday
-											OR calendar.friday = :friday
-											OR calendar.saturday = :saturday
-											OR calendar.sunday = :sunday
-										  )
-										AND (SELECT count(time.stop_id) 
-												FROM  mivbstibgtfs_stop_times time
-												WHERE time.trip_id = trip.trip_id
-												AND time.arrival_time_t > times.departure_time_t) > 0
-										ORDER BY times.arrival_time_t
-										LIMIT :offset, :rowcount;";
+    private $GET_ARRIVALS_BY_NAME_QUERY = "SELECT MIN(DISTINCT route.route_short_name) route_short_name, MIN(route.route_type) route_type, MIN(trip.trip_headsign) trip_headsign, MIN(route.route_color) route_color, MIN(route.route_text_color) route_text_color, MIN(trip.direction_id) direction_id, MIN(times.arrival_time_t) times.arrival_time_t
+                                        FROM mivbstibgtfs_stop_times times
+                                        JOIN mivbstibgtfs_trips trip
+                                            ON trip.trip_id = times.trip_id
+                                        JOIN mivbstibgtfs_routes route
+                                            ON route.route_id = trip.route_id
+                                        JOIN mivbstibgtfs_calendar calendar
+                                            ON calendar.service_id = trip.service_id
+                                        LEFT JOIN mivbstibgtfs_calendar_dates calendar_dates
+                                            ON calendar_dates.service_id = calendar.service_id AND calendar_dates.date = STR_TO_DATE(CONCAT(:year, '-', :month, '-', :day), '%Y-%m-%d')
+                                        INNER JOIN mivbstibgtfs_stops stop
+                                            ON stop.stop_name = :stationIdentifier
+                                        WHERE times.stop_id = stop.stop_id
+                                        AND times.arrival_time_t >= TIME(STR_TO_DATE(CONCAT(:hour, ':', :minute), '%k:%i'))
+                                        AND calendar.start_date <= STR_TO_DATE(CONCAT(:year, '-', :month, '-', :day), '%Y-%m-%d')
+                                          AND calendar.end_date >= STR_TO_DATE(CONCAT(:year, '-', :month, '-', :day), '%Y-%m-%d')
+                                          AND 
+                                          (
+                                            calendar.monday = :monday
+                                            OR calendar.tuesday = :tuesday
+                                            OR calendar.wednesday = :wednesday
+                                            OR calendar.thursday = :thursday
+                                            OR calendar.friday = :friday
+                                            OR calendar.saturday = :saturday
+                                            OR calendar.sunday = :sunday
+                                          )
+                                        AND (SELECT COUNT(time.stop_id) 
+                                                FROM  mivbstibgtfs_stop_times time
+                                                WHERE time.trip_id = trip.trip_id
+                                                AND time.arrival_time_t > times.departure_time_t) > 0
+                                        GROUP BY route.route_short_name, route.route_type, trip.trip_headsign, route.route_color, route.route_text_color, trip.direction_id, times.arrival_time_t
+                                        HAVING COUNT(CASE WHEN calendar_dates.`exception_type` = 1 THEN 1 END) > 0 OR COUNT(CASE WHEN calendar_dates.`exception_type` = 2 THEN 1 END) = 0
+                                        ORDER BY times.arrival_time_t
+                                        LIMIT :offset, :rowcount;";
 										
     /**
      * Query to get all departures of a given station on a given date and starting from a given time
@@ -179,34 +191,38 @@ class MIVBSTIBStopTimesDao {
      * @param int $saturday Saturday 
      * @param int $sunday Sunday 
      */
-    private $GET_ARRIVALS_BY_ID_QUERY = "SELECT DISTINCT route.route_short_name, route.route_type, trip.trip_headsign, route.route_color, route.route_text_color, trip.direction_id, times.arrival_time_t
-										FROM mivbstibgtfs_stop_times times
-										JOIN mivbstibgtfs_trips trip
-											ON trip.trip_id = times.trip_id
-										JOIN mivbstibgtfs_routes route
-											ON route.route_id = trip.route_id
-										JOIN mivbstibgtfs_calendar calendar
-											ON calendar.service_id = trip.service_id
-										WHERE times.stop_id = :stationIdentifier
-										AND times.arrival_time_t >= TIME(STR_TO_DATE(CONCAT(:hour, ':', :minute), '%k:%i'))
-										AND calendar.start_date <= STR_TO_DATE(CONCAT(:year, '-', :month, '-', :day), '%Y-%m-%d')
-										  AND calendar.end_date >= STR_TO_DATE(CONCAT(:year, '-', :month, '-', :day), '%Y-%m-%d')
-										  AND 
-										  (
-											calendar.monday = :monday
-											OR calendar.tuesday = :tuesday
-											OR calendar.wednesday = :wednesday
-											OR calendar.thursday = :thursday
-											OR calendar.friday = :friday
-											OR calendar.saturday = :saturday
-											OR calendar.sunday = :sunday
-										  )
-										AND (SELECT count(time.stop_id) 
-												FROM  mivbstibgtfs_stop_times time
-												WHERE time.trip_id = trip.trip_id
-												AND time.arrival_time_t > times.departure_time_t) > 0
-										ORDER BY times.arrival_time_t
-										LIMIT :offset, :rowcount;";
+    private $GET_ARRIVALS_BY_ID_QUERY = "SELECT MIN(DISTINCT route.route_short_name) route_short_name, MIN(route.route_type) route_type, MIN(trip.trip_headsign) trip_headsign, MIN(route.route_color) route_color, MIN(route.route_text_color) route_text_color, MIN(trip.direction_id) direction_id, MIN(times.arrival_time_t) times.arrival_time_t
+                                        FROM mivbstibgtfs_stop_times times
+                                        JOIN mivbstibgtfs_trips trip
+                                            ON trip.trip_id = times.trip_id
+                                        JOIN mivbstibgtfs_routes route
+                                            ON route.route_id = trip.route_id
+                                        JOIN mivbstibgtfs_calendar calendar
+                                            ON calendar.service_id = trip.service_id
+                                        LEFT JOIN mivbstibgtfs_calendar_dates calendar_dates
+                                            ON calendar_dates.service_id = calendar.service_id AND calendar_dates.date = STR_TO_DATE(CONCAT(:year, '-', :month, '-', :day), '%Y-%m-%d')
+                                        WHERE times.stop_id = :stationIdentifier
+                                        AND times.arrival_time_t >= TIME(STR_TO_DATE(CONCAT(:hour, ':', :minute), '%k:%i'))
+                                        AND calendar.start_date <= STR_TO_DATE(CONCAT(:year, '-', :month, '-', :day), '%Y-%m-%d')
+                                          AND calendar.end_date >= STR_TO_DATE(CONCAT(:year, '-', :month, '-', :day), '%Y-%m-%d')
+                                          AND 
+                                          (
+                                            calendar.monday = :monday
+                                            OR calendar.tuesday = :tuesday
+                                            OR calendar.wednesday = :wednesday
+                                            OR calendar.thursday = :thursday
+                                            OR calendar.friday = :friday
+                                            OR calendar.saturday = :saturday
+                                            OR calendar.sunday = :sunday
+                                          )
+                                        AND (SELECT COUNT(time.stop_id) 
+                                                FROM  mivbstibgtfs_stop_times time
+                                                WHERE time.trip_id = trip.trip_id
+                                                AND time.arrival_time_t > times.departure_time_t) > 0
+                                        GROUP BY route.route_short_name, route.route_type, trip.trip_headsign, route.route_color, route.route_text_color, trip.direction_id, times.arrival_time_t
+                                        HAVING COUNT(CASE WHEN calendar_dates.`exception_type` = 1 THEN 1 END) > 0 OR COUNT(CASE WHEN calendar_dates.`exception_type` = 2 THEN 1 END) = 0
+                                        ORDER BY times.arrival_time_t
+                                        LIMIT :offset, :rowcount;";
 																
     /**
      *
