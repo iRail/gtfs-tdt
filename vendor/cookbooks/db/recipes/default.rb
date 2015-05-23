@@ -36,6 +36,13 @@ end
 execute "apt-get update"
 package "python-software-properties"
 
+bash "Add PPA for latest PHP" do
+  code <<-EOH
+  sudo add-apt-repository ppa:ondrej/php5
+  EOH
+end
+
+execute "apt-get update"
 
 # install the software we need
 %w(
@@ -45,6 +52,8 @@ vim
 git
 unzip
 mysql-server
+php5-cli
+php5-curl
 ).each { | pkg | package pkg }
 
 bash "Create mysql database" do
