@@ -1,4 +1,4 @@
-!/bin/bash
+#!/bin/bash
 
 # Download De Lijn GTFS data
 echo "Downloading De Lijn GTFS"
