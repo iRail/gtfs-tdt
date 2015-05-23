@@ -136,31 +136,6 @@ template "/etc/mysql/my.cnf" do
   source 'my.cnf'
 end
 
-# create database on default
-bash 'create database datatank' do
-  not_if "echo 'show databases' | /usr/bin/mysql -u root -h 127.0.0.1 -P 3306 -p#{Shellwords.escape(root_pass)} | grep datatank"
-  code <<-EOF
-  echo 'CREATE DATABASE datatank;' | /usr/bin/mysql -u root -h 127.0.0.1 -P 3306 -p#{Shellwords.escape(root_pass)};
-  EOF
-  action :run
-end
-
-# bash "Create database" do
-#   user "vagrant"
-#   cwd "/vagrant"
-#   not_if "echo 'show databases' | mysql -u root | grep datatank"
-#   code <<-EOH
-#   set -e
-#   echo "create database datatank" | mysql -u root
-#   EOH
-# end
-
-# template "/vagrant/tdt/app/config/database.php" do
-#   user "vagrant"
-#   group "vagrant"
-#   source "database.php"
-# end
-
 template "/vagrant/tdt/app/config/database.php" do
   user "root"
   mode "0644"
@@ -172,12 +147,6 @@ template "/vagrant/tdt/app/config/app.php" do
   mode "0644"
   source "app.php"
 end
-
-# template "/vagrant/tdt/app/config/app.php" do
-#   user "vagrant"
-#   group "vagrant"
-#   source "app.php"
-# end
 
 bash "run composer" do
   cwd "/vagrant/tdt"
