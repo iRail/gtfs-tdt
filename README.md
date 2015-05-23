@@ -10,21 +10,25 @@ Also Chef Development Kit is needed:
 See: https://downloads.chef.io/
 
 Next, install Vagrant Librarian so Chef runs automatically
-vagrant plugin install vagrant-librarian-chef
+
+`vagrant plugin install vagrant-librarian-chef`
 
 Our custom cookbooks are located in vendor/cookbooks.
 Librarian fetches all the community cookbook dependencies into it's own directory cookbooks.
 
 Add The Datatank-ip and -hostname to your hosts-file:
+
 192.168.70.70	tdt.hub.dev
 
 # Run
 
-vagrant up [ tdt | db ]
+`vagrant up [ tdt | db ]`
 
 # Acces server 
 
-vagrant ssh tdt|db
+`vagrant ssh db`
+
+`vagrant ssh tdt`
 
 # Load Datasources 
 Currently are De Lijn and MivbStib included.
@@ -36,13 +40,13 @@ For this example we're going to add De Lijn-datasource. Same principle for MivbS
 This will load all the data.
 
 SSH into the db-environment:
-$ vagrant ssh db
+`vagrant ssh db`
 
 Go to De Lijn datasources-folder:
-$ cd /vagrant/datasources/delijn
+`cd /vagrant/datasources/delijn`
 
 Execute init.sh:
-$ ./init.sh
+`./init.sh`
 
 ## Install resource into TDT
 Go to tdt.hub.dev/api/admin in your favourite browser.
