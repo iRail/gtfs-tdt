@@ -4,14 +4,12 @@ Group vagrant
 
 <VirtualHost *:80>
 
-  ServerName <%= node[:host_name]  %>
-  
-  DocumentRoot /vagrant/tdt/public
-  <Directory "/vagrant/tdt/public">
+  ServerName tdt.hub.dev
+
+  DocumentRoot <%= node['apache']['docroot_dir'] %>
+  <Directory <%= node['apache']['docroot_dir'] %>>
     AllowOverride All
-    Options FollowSymLinks
-    Order allow,deny
-    Allow from all
+    Options Indexes FollowSymLinks MultiViews
     Require all granted
   </Directory>
   
