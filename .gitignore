@@ -5,5 +5,7 @@
 /tmp
 .vagrant/
 Cheffile.lock
+Berksfile.lock
+berks-cookbooks/
 /tdt/
 
