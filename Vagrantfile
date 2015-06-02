@@ -3,105 +3,51 @@
 
 tdt_ip                   = "192.168.70.70"
 tdt_hostname             = "tdt.hub.dev"
-db_ip                    = "192.168.70.71"
 
-VAGRANTFILE_API_VERSION = "2"
+Vagrant.require_version ">= 1.7.0"
 
-WINDOWS = (RbConfig::CONFIG['host_os'] =~ /mswin|mingw|cygwin/) ? true : false
+Vagrant.configure("2") do |config|
+  # All Vagrant configuration is done here. The most common configuration
+  # options are documented and commented below. For a complete reference,
+  # please see the online documentation at vagrantup.com.
 
-Vagrant.configure(VAGRANTFILE_API_VERSION) do |config|
+  # Every Vagrant virtual environment requires a box to build off of.
+  config.vm.box = "chef/ubuntu-14.04"
 
-  # This is the machine containing the databases
-  config.vm.define "db" do |db|
-    # Use Ubuntu 14.04 Trusty Tahr 64-bit as our operating system
-    db.vm.box = "ubuntu/trusty64"
-
-    # Configurate the virtual machine to use 2GB of RAM
-    db.vm.provider :virtualbox do |vb|
-      vb.customize ["modifyvm", :id, "--memory", "2048"]
-    end
-
-    db.vm.network :private_network, ip: db_ip
-    db.vm.hostname = "db"
-    
-    # Use Chef Solo to provision our virtual machine
-    db.vm.provision :chef_solo do |chef|
-      chef.cookbooks_path = ["cookbooks", "vendor/cookbooks"]
-
-      chef.add_recipe "apt"
-      chef.add_recipe "curl"
-      chef.add_recipe "tmux"
-      chef.add_recipe "vim"
-      chef.add_recipe "git"
-      chef.add_recipe "build-essential"
-
-      chef.add_recipe "db"
-
-      # chef debug level, start vagrant like this to debug:
-      # $ CHEF_LOG_LEVEL=debug vagrant <provision or up>
-      chef.log_level = ENV['CHEF_LOG'] || "info"
-            
-      host_ip = db_ip[/(.*\.)\d+$/, 1] + "1"
-      
-      chef.json = {
-        :host_ip => host_ip,
-        :xdebug_enabled => true,
-        :xdebug_remote_enable => "1",
-        :xdebug_remote_port => "9000",
-        :xdebug_profiler_output_dir => "/vagrant/xdebug",
-        :xdebug_trace_output_dir => "/vagrant/xdebug",
-      }
-    end
+  if Vagrant.has_plugin? 'vagrant-omnibus'
+    # Set Chef version for Omnibus
+    config.omnibus.chef_version = :latest
+  else
+    raise Vagrant::Errors::VagrantError.new,
+      "vagrant-omnibus missing, please install the plugin:\n" +
+      "vagrant plugin install vagrant-omnibus"
   end
 
-  # This is the machine container a The DataTank installation
-  config.vm.define "tdt" do |tdt|
-    # Use Ubuntu 14.04 Trusty Tahr 64-bit as our operating system
-    tdt.vm.box = "ubuntu/trusty64"
+  # Create a private network, which allows host-only access to the machine
+  # using a specific IP.
+  config.vm.network :private_network, ip: tdt_ip
+  config.vm.hostname = tdt_hostname  
 
-    # Configurate the virtual machine to use 2GB of RAM
-    tdt.vm.provider :virtualbox do |vb|
-      vb.customize ["modifyvm", :id, "--memory", "2048"]
-    end
+  # Use NFS for the shared folder
+  config.vm.synced_folder ".", "/vagrant", type: "nfs"
 
-    # tdt.vm.synced_folder ".", "/vagrant", :nfs => !WINDOWS
-    tdt.vm.synced_folder ".", "/vagrant", type: "nfs"
+  # Provider-specific configuration so you can fine-tune VirtualBox for Vagrant.
+  # These expose provider-specific options.
+  config.vm.provider :virtualbox do |vb|
+    # Use VBoxManage to customize the VM.
+    # For example to change memory or number of CPUs:
+    vb.customize ["modifyvm", :id, "--memory", "2048"]
+    vb.customize ["modifyvm", :id, "--cpus", "1"]
+  end
 
-    tdt.vm.network :private_network, ip: tdt_ip
-    tdt.vm.hostname = tdt_hostname
+  # Enable provisioning with chef zero, specifying a cookbooks path, roles
+  # path, and data_bags path (all relative to this Vagrantfile), and adding
+  # some recipes and/or roles.
+  config.vm.provision :chef_zero do |chef|
+    chef.cookbooks_path = ["berks-cookbooks", "cookbooks"] 
 
-    # Use Chef Solo to provision our virtual machine
-    tdt.vm.provision :chef_solo do |chef|
-      chef.cookbooks_path = ["cookbooks", "vendor/cookbooks"]
-
-      chef.add_recipe "apt"
-      chef.add_recipe "curl"
-      chef.add_recipe "git"
-      chef.add_recipe "vim"
-      chef.add_recipe "php"
-      chef.add_recipe "nodejs"
-      chef.add_recipe "memcached"
-      chef.add_recipe "apache2"
-      chef.add_recipe "build-essential"
-      chef.add_recipe "openssl"
-
-      chef.add_recipe "tdt"
-
-      # chef debug level, start vagrant like this to debug:
-      # $ CHEF_LOG_LEVEL=debug vagrant <provision or up>
-      chef.log_level = ENV['CHEF_LOG'] || "info"
-      
-      host_ip = tdt_ip[/(.*\.)\d+$/, 1] + "1"
-      
-      chef.json = {
-        :host_ip => host_ip,
-        :host_name => tdt_hostname,
-        :xdebug_enabled => true,
-        :xdebug_remote_enable => "1",
-        :xdebug_remote_port => "9000",
-        :xdebug_profiler_output_dir => "/vagrant/xdebug",
-        :xdebug_trace_output_dir => "/vagrant/xdebug"
-      }
-    end
+    # List of recipes to run
+    chef.add_recipe "the_datatank"
+    # chef.add_recipe "the_datatank::nodejs"
   end
 end

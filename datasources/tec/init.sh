@@ -11,12 +11,10 @@ unzip /tmp/gtfs-tec-20150504.zip -d /tmp/gtfs-tec
 # Import the data in MySQL-database
 echo "Loading the data in database. Wait 1-2 min..."
 
-mysql --local-infile -u root < /vagrant/datasources/tec/importTec.sql
+mysql --local-infile --user="root" --password="root" < /vagrant/datasources/tec/importTec.sql
 
 echo "Done!"
 
 # Copy TEC TDT-resources into installed folder
 echo "Copy TDT-resources into The DataTank installed folder"
 cp -R TECResource ../../tdt/installed
-
-# TODO: install script TDT
