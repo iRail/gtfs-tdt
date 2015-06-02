@@ -28,8 +28,8 @@ Vagrant.configure("2") do |config|
   config.vm.network :private_network, ip: tdt_ip
   config.vm.hostname = tdt_hostname  
 
-  # Set share folder permissions to 777 so that apache can write files
-  config.vm.synced_folder ".", "/vagrant", mount_options: ['dmode=777','fmode=666']
+  # Use NFS for the shared folder
+  config.vm.synced_folder ".", "/vagrant", type: "nfs"
 
   # Provider-specific configuration so you can fine-tune VirtualBox for Vagrant.
   # These expose provider-specific options.
