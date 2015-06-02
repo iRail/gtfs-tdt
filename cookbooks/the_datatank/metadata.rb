@@ -1,0 +1,18 @@
+name             "the_datatank"
+maintainer       "brechtvdv"
+maintainer_email "brecht@irail.be"
+license          "MIT"
+description      "Configures vagrant virtual machine with the datatank installed"
+long_description IO.read(File.join(File.dirname(__FILE__), 'README.md'))
+version          "0.0.1"
+
+depends          "apache2"
+depends          "apt"
+depends          "build-essential"
+depends          "composer"
+depends          "git"
+depends          "mysql"
+depends          "nodejs"
+depends          "npm"
+depends          "php"
+depends          "python"
