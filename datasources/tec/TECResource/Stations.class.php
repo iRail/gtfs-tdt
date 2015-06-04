@@ -1,16 +1,15 @@
 <?php
 /**
- * This is a class which will return all available Haltes from De Lijn
+ * This is a class which will return all available Stations from TEC
  * 
- * @package DeLijnResource
  * @copyright (C) 2015 by iRail vzw/asbl
  * @license MIT
  * @author Brecht Van de Vyvere <brecht@iRail.be>
  */
 
-include_once('DeLijnStationDao.php');
+include_once('TECStationDao.php');
  
-class DeLijnStations{
+class TECStations{
 
     public function __construct() {     
         // Initialize possible params
@@ -104,6 +103,6 @@ class DeLijnStations{
     }
 
     public static function getDoc(){
-        return "This resource contains stations from De Lijn.";
+        return "This resource contains stations from TEC.";
     }
 }
