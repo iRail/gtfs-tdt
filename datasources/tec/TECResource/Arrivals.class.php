@@ -1,19 +1,21 @@
 <?php
 /**
- * This is a class which will return the information with the latest departures from a certain station
- *
+ * This is a class which will return the information with the latest arrivals from a certain station
+ * 
  * @copyright (C) 2015 by iRail vzw/asbl
  * @license MIT
  * @author Brecht Van de Vyvere <brecht@iRail.be>
  */
+
 include_once('TECStopTimesDao.php');
  
-class TECDepartures{
+class TECArrivals{
 
-    public function __construct() {
+    public function __construct() {     
         $this->offset = 0;
         $this->rowcount = 1024;
     }
+
 
     /**
      * The set of REST parameters that this resource requires.
@@ -85,21 +87,21 @@ class TECDepartures{
     public function getNamespaces(){
         return array();
     }
-    
+
     /**
      * Return an array with your data
      */
     public function getData(){
         $stopTimesDao = new StopTimesDao();
-
+    
         if(substr($this->stationidentifier, 0, 8) == "stoparea" || substr($this->stationidentifier, 0, 3) == "tec") {
-            return $stopTimesDao->getDeparturesByID($this->stationidentifier, $this->year, $this->month, $this->day, $this->hour, $this->minute, $this->offset, $this->rowcount);
+            return $stopTimesDao->getArrivalsByID($this->stationidentifier, $this->year, $this->month, $this->day, $this->hour, $this->minute, $this->offset, $this->rowcount);
         } else {
-            return $stopTimesDao->getDeparturesByName($this->stationidentifier, $this->year, $this->month, $this->day, $this->hour, $this->minute, $this->offset, $this->rowcount);
+            return $stopTimesDao->getArrivalsByName($this->stationidentifier, $this->year, $this->month, $this->day, $this->hour, $this->minute, $this->offset, $this->rowcount);
         }
     }
 
     public static function getDoc(){
-        return "This resource contains the Departures for a certain Station for a certain date and time from TEC.";
+        return "This resource contains the Arrivals for a certain Station for a certain date and time from TEC.";
     }
 }
