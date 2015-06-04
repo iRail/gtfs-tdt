@@ -3,10 +3,10 @@
 /**
  * This is a class which will return all available Haltes from De Lijn
  * 
- * @package packages/Haltes
- * @copyright (C) 2012 by iRail vzw/asbl
+ * @package DeLijnResource
+ * @copyright (C) 2015 by iRail vzw/asbl
  * @license AGPLv3
- * @author Maarten Cautreels <maarten@flatturtle.com>
+ * @author Brecht Van de Vyvere <brecht@iRail.be>
  */
 
 include_once('Config.class.php');
@@ -23,7 +23,8 @@ class StationDao {
 	  */
 	private $GET_ALL_STATIONS_QUERY = "SELECT stop_id, stop_code, stop_name, stop_lat, stop_lon 
 								FROM dlgtfs_stops
-								ORDER BY stop_name ASC";
+								ORDER BY stop_name ASC
+								LIMIT :offset , :rowcount;";
 								
 	/**
 	  * Query to get all stations with a certain name
@@ -32,7 +33,8 @@ class StationDao {
 	private $GET_STATIONS_BY_NAME_QUERY = "SELECT stop_id, stop_code, stop_name, stop_lat, stop_lon 
 								FROM dlgtfs_stops
 								WHERE lower(stop_name) LIKE :name
-								ORDER BY stop_name ASC";
+								ORDER BY stop_name ASC
+								LIMIT :offset , :rowcount;";
 
 	/**
 	  * Query to get all closest station to a given point (lat/long) ordered by distance
@@ -50,7 +52,8 @@ class StationDao {
 								   ) AS distance 
 								FROM dlgtfs_stops 
 								HAVING distance < 250000
-								ORDER BY distance";
+								ORDER BY distance
+								LIMIT :offset , :rowcount;";
 								
 	/**
 	  * Query to get a station with a given id
@@ -136,10 +139,6 @@ class StationDao {
 	public function getAllStations($offset=0, $rowcount=1024) {
 		$arguments = array(":offset" => intval(urldecode($offset)), ":rowcount" => intval(urldecode($rowcount)));
 		$query = $this->GET_ALL_STATIONS_QUERY;
-		
-		if($offset != null and $rowcount != null) {
-			$query .= $this->LIMIT_QUERY;
-		}
 
 		$result = R::getAll($query, $arguments);
 		
@@ -169,8 +168,6 @@ class StationDao {
 		$arguments = array(":name" => '%' . urldecode(strtolower( $name )) . '%', ":offset" => intval(urldecode($offset)), ":rowcount" => intval(urldecode($rowcount)));
 		$query = $this->GET_STATIONS_BY_NAME_QUERY;
 
-		$query .= $this->LIMIT_QUERY;
-
 		$result = R::getAll($query, $arguments);
 		
 		$results = array();
@@ -199,10 +196,6 @@ class StationDao {
 	public function getClosestStations($longitude, $latitude, $offset=null, $rowcount=null) {
 		$arguments = array(":latitude" => urldecode($latitude), ":longitude" => urldecode($longitude), ":offset" => intval(urldecode($offset)), ":rowcount" => intval(urldecode($rowcount)));
 		$query = $this->GET_CLOSEST_STATIONS_QUERY;
-		
-		if($offset != null and $rowcount != null) {
-			$query .= $this->LIMIT_QUERY;
-		}
 		
 		$result = R::getAll($query, $arguments);
 		

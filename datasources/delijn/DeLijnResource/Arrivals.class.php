@@ -12,7 +12,7 @@ include_once('DeLijnStopTimesDao.php');
  
 class DeLijnArrivals{
 
-    public function __construct() {		
+    public function __construct() {     
         $this->offset = 0;
         $this->rowcount = 1024;
     }
@@ -94,17 +94,15 @@ class DeLijnArrivals{
      */
     public function getData(){
         $stopTimesDao = new StopTimesDao();
-	
+    
         if(is_numeric($this->stationidentifier)) {
-			return $stopTimesDao->getArrivalsByID($this->stationidentifier, $this->year, $this->month, $this->day, $this->hour, $this->minute, $this->offset, $this->rowcount);
-		} else {
-			return $stopTimesDao->getArrivalsByName($this->stationidentifier, $this->year, $this->month, $this->day, $this->hour, $this->minute, $this->offset, $this->rowcount);
-		}
+            return $stopTimesDao->getArrivalsByID($this->stationidentifier, $this->year, $this->month, $this->day, $this->hour, $this->minute, $this->offset, $this->rowcount);
+        } else {
+            return $stopTimesDao->getArrivalsByName($this->stationidentifier, $this->year, $this->month, $this->day, $this->hour, $this->minute, $this->offset, $this->rowcount);
+        }
     }
 
     public static function getDoc(){
         return "This resource contains the Arrivals for a certain Station for a certain date and time from De Lijn.";
     }
 }
-
-?>
