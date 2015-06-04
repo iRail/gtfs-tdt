@@ -4,7 +4,7 @@
  * This is a class which will return the information with the latest departures from a certain station
  * 
  * @copyright (C) 2015 by iRail vzw/asbl
- * @license AGPLv3
+ * @license MIT
  * @author Brecht Van de Vyvere <brecht@iRail.be>
  */
 
@@ -130,7 +130,6 @@ class StopTimesDao {
      */
     public function getDeparturesByID($stationId, $year, $month, $day, $hour, $minute, $offset=0, $rowcount=1024) { 
         date_default_timezone_set($this->timezone);
-              var_dump("test2");
 
         $arguments = array(":stationId" => urldecode($stationId), ":year" => urldecode($year), ":month" => urldecode($month), ":day" => urldecode($day), ":hour" => urldecode($hour), ":minute" => urldecode($minute), ":offset" => intval(urldecode($offset)), ":rowcount" => intval(urldecode($rowcount)));
         $query = $this->GET_DEPARTURES_BY_ID_QUERY;
