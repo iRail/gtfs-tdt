@@ -21,6 +21,8 @@ Install [vagrant-omnibus](https://github.com/chef/vagrant-omnibus) plugin
 
     $ vagrant plugin install vagrant-omnibus
 
+Download and install [ChefDK](https://downloads.chef.io/chef-dk/)
+
 Clone this repository
 
 Go to the repository folder and launch the box
