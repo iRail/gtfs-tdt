@@ -9,6 +9,7 @@ Requirements:
 * Virtualbox
 * Vagrant >= 1.7.0
 * vagrant-omnibus plugin
+* ChefDK
 
 Installation:
 -------------
