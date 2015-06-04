@@ -38,10 +38,10 @@ Add The Datatank-ip and -hostname to your hosts-file:
 Load datasources:
 -----------------
 
-Currently are De Lijn and MivbStib included.
+Currently are De Lijn, MivbStib and TEC included.
 Datasources are located in the datasources-folder.
 
-For this example we're going to add De Lijn-datasource. Same principle for MivbStib.
+For this example we're going to add De Lijn-datasource. Same principle for TEC and MivbStib.
 
 ### Acces server
 
