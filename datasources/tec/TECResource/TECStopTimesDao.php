@@ -22,7 +22,7 @@ class StopTimesDao {
      */
     var $timezone = "Europe/Brussels";
 
-    private $GET_DEPARTURES_BY_NAME_QUERY = "SELECT DISTINCT route.route_short_name, trip.trip_headsign, trip.direction_id, times.departure_time
+    private $GET_DEPARTURES_BY_NAME_QUERY = "SELECT DISTINCT route.route_id, route.route_short_name, route.route_long_name, route.route_desc, route.route_type, route.route_color, route.route_text_color, trip.trip_headsign, trip.direction_id, times.departure_time, trip.wheelchair_accessible, trip.bikes_allowed
                                     FROM tecgtfs_stop_times times
                                     JOIN tecgtfs_trips trip
                                         ON trip.trip_id = times.trip_id
@@ -42,7 +42,7 @@ class StopTimesDao {
                                     ORDER BY times.departure_time
                                     LIMIT :offset, :rowcount;";
 
-    private $GET_DEPARTURES_BY_ID_QUERY = "SELECT DISTINCT route.route_short_name, trip.trip_headsign, trip.direction_id, times.departure_time
+    private $GET_DEPARTURES_BY_ID_QUERY = "SELECT DISTINCT route.route_id, route.route_short_name, route.route_long_name, route.route_desc, route.route_type, route.route_color, route.route_text_color, trip.trip_headsign, trip.direction_id, times.departure_time, trip.wheelchair_accessible, trip.bikes_allowed
                                     FROM tecgtfs_stop_times times
                                     JOIN tecgtfs_trips trip
                                         ON trip.trip_id = times.trip_id
@@ -60,7 +60,7 @@ class StopTimesDao {
                                     ORDER BY times.departure_time
                                     LIMIT :offset, :rowcount;";
                                     
-    private $GET_ARRIVALS_BY_NAME_QUERY = "SELECT DISTINCT route.route_short_name, trip.trip_headsign, trip.direction_id, times.arrival_time
+    private $GET_ARRIVALS_BY_NAME_QUERY = "SELECT DISTINCT route.route_id, route.route_short_name, route.route_long_name, route.route_desc, route.route_type, route.route_color, route.route_text_color, trip.trip_headsign, trip.direction_id, times.departure_time, trip.wheelchair_accessible, trip.bikes_allowed
                                     FROM tecgtfs_stop_times times
                                     JOIN tecgtfs_trips trip
                                         ON trip.trip_id = times.trip_id
@@ -80,7 +80,7 @@ class StopTimesDao {
                                     ORDER BY times.arrival_time
                                     LIMIT :offset, :rowcount;";
                                     
-    private $GET_ARRIVALS_BY_ID_QUERY = "SELECT DISTINCT route.route_short_name, trip.trip_headsign, trip.direction_id, times.arrival_time
+    private $GET_ARRIVALS_BY_ID_QUERY = "SELECT DISTINCT route.route_id, route.route_short_name, route.route_long_name, route.route_desc, route.route_type, route.route_color, route.route_text_color, trip.trip_headsign, trip.direction_id, times.departure_time, trip.wheelchair_accessible, trip.bikes_allowed
                                     FROM tecgtfs_stop_times times
                                     JOIN tecgtfs_trips trip
                                         ON trip.trip_id = times.trip_id
@@ -183,14 +183,19 @@ class StopTimesDao {
      */
     private function parseStopTimes($result, $year, $month, $day) {
         $stoptimes = array();
-        foreach($result as &$row){
+        foreach($result as $row){
             $stoptime = array();
-            
+
+            $stoptime["route_id"] = $row["route_id"];
             $stoptime["short_name"] = $row["route_short_name"];
-            //$stoptime["type"] = $row["route_type"];
-            $stoptime["long_name"] = $row["trip_headsign"];
-            //$stoptime["color"] = $row["route_color"];
-            //$stoptime["text_color"] = $row["route_text_color"];
+            $stoptime["long_name"] = $row["route_long_name"];
+            $stoptime["route_desc"] = $row["route_desc"];
+            $stoptime["type"] = $row["route_type"];
+            $stoptime["color"] = $row["route_color"];
+            $stoptime["text_color"] = $row["route_text_color"];
+            $stoptime["headsign"] = $row["trip_headsign"];
+            $stoptime["wheelchair_accessible"] = $row["wheelchair_accessible"];
+            $stoptime["bikes_allowed"] = $row["bikes_allowed"];          
             $stoptime["direction"] = $row["direction_id"];
 
             if(isset($row["departure_time"])) {
@@ -207,9 +212,16 @@ class StopTimesDao {
             $stoptime["iso8601"] = date("c", $date);
             $stoptime["time"] = date("U", $date);
             
-            $stoptimes[] = $stoptime;
+            // Some operations to make a better datastructure
+            $s = array();
+            $s["stopTime"] = $stoptime;
+            
+            $stoptimes[] = $s;
         }
+
+        $stimes = array();
+        $stimes["stopTimes"] = $stoptimes;
         
-        return $stoptimes;
+        return $stimes;
     }
 }
