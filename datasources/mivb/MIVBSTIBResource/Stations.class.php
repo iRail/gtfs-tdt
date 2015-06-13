@@ -90,20 +90,13 @@ class MIVBSTIBStations{
     public function getData(){
         $stationDao = new MIVBSTIBStationDao();
         if($this->id != null) {
-                            var_dump("1");
-
             return $stationDao->getStationById($this->id);
         } else if($this->longitude != null && $this->latitude != null) {
-                            var_dump("2");
-
             return $stationDao->getClosestStations($this->longitude, $this->latitude);
         } else if ($this->name != null) {
-                            var_dump("3");
-
             return $stationDao->getStationsByName($this->name, $this->offset, $this->rowcount);
         }
-	            var_dump("4");
-
+    
         return $stationDao->getAllStations($this->offset, $this->rowcount);
     }
 
