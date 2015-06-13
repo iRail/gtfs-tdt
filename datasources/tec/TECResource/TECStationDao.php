@@ -80,20 +80,7 @@ class StationDao {
 		$query = $this->GET_STATION_BY_ID;
 		
 		$result = R::getAll($query, $arguments);
-		
-		$results = array();
-		foreach($result as &$row){
-			$station = array();
-			$station["id"] = $row["stop_id"];
-			$station["code"] = $row["stop_code"];
-			$station["name"] = $row["stop_name"];
-			$station["latitude"] = $row["stop_lat"];
-			$station["longitude"] = $row["stop_lon"];
-			
-			$results[] = $station;
-		}
-		
-		return $results;
+		return $this->parseStations($result);
 	}
 	
 	/**
@@ -106,20 +93,7 @@ class StationDao {
 		$query = $this->GET_STATION_BY_CODE;
 		
 		$result = R::getAll($query, $arguments);
-		
-		$results = array();
-		foreach($result as &$row){
-			$station = array();
-			$station["id"] = $row["stop_id"];
-			$station["code"] = $row["stop_code"];
-			$station["name"] = $row["stop_name"];
-			$station["latitude"] = $row["stop_lat"];
-			$station["longitude"] = $row["stop_lon"];
-			
-			$results[] = $station;
-		}
-		
-		return $results;
+		return $this->parseStations($result);
 	}
 	
 	/**
@@ -132,21 +106,8 @@ class StationDao {
 		$arguments = array(":offset" => intval(urldecode($offset)), ":rowcount" => intval(urldecode($rowcount)));
 		$query = $this->GET_ALL_STATIONS_QUERY;
 
-		$result = R::getAll($query, $arguments);
-		
-		$results = array();
-		foreach($result as &$row){
-			$station = array();
-			$station["id"] = $row["stop_id"];
-			$station["code"] = $row["stop_code"];
-			$station["name"] = $row["stop_name"];
-			$station["latitude"] = $row["stop_lat"];
-			$station["longitude"] = $row["stop_lon"];
-			
-			$results[] = $station;
-		}
-		
-		return $results;
+		$result = R::getAll($query, $arguments);		
+		return $this->parseStations($result);
 	}
 	
 	/**
@@ -161,20 +122,7 @@ class StationDao {
 		$query = $this->GET_STATIONS_BY_NAME_QUERY;
 
 		$result = R::getAll($query, $arguments);
-		
-		$results = array();
-		foreach($result as &$row){
-			$station = array();
-			$station["id"] = $row["stop_id"];
-			$station["code"] = $row["stop_code"];
-			$station["name"] = $row["stop_name"];
-			$station["latitude"] = $row["stop_lat"];
-			$station["longitude"] = $row["stop_lon"];
-			
-			$results[] = $station;
-		}
-		date_default_timezone_set("UTC");
-		return $results;
+		return $this->parseStations($result);
 	}
 
 	/**
@@ -189,25 +137,35 @@ class StationDao {
 		$arguments = array(":latitude" => urldecode($latitude), ":longitude" => urldecode($longitude), ":offset" => intval(urldecode($offset)), ":rowcount" => intval(urldecode($rowcount)));
 		$query = $this->GET_CLOSEST_STATIONS_QUERY;
 		
-		if($offset != null and $rowcount != null) {
-			$query .= $this->LIMIT_QUERY;
-		}
-		
 		$result = R::getAll($query, $arguments);
-		
-		$results = array();
+		return $this->parseStations($result);
+	}
+
+	/**
+     * Parses the data that comes out of the queries and creates nice objects that could be returned to the user.
+     */
+    private function parseStations($result) {
+    	$stations = array();
 		foreach($result as &$row){
 			$station = array();
 			$station["id"] = $row["stop_id"];
 			$station["code"] = $row["stop_code"];
-			$station["name"] = $row["stop_name"];
-			$station["latitude"] = $row["stop_lat"];
+
+			// remove double quotes from stop_name and stop_lat
+			$station["name"] = ltrim($row["stop_name"],'"');
+			$station["latitude"] = ltrim(rtrim($row["stop_lat"],'"'));
 			$station["longitude"] = $row["stop_lon"];
-			$station["distance"] = $row["distance"];
 			
-			$results[] = $station;
+			// Some operations to make a better datastructure to parse
+            $s = array();
+            $s["station"] = $station;
+
+			$stations[] = $s;
 		}
-		
-		return $results;
-	}
+
+		$sstations = array();
+        $sstations["stations"] = $stations;
+
+		return $sstations;
+    }
 }
