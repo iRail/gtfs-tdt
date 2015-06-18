@@ -174,29 +174,29 @@ ALTER TABLE `tecgtfs_stop_times`
   ON UPDATE NO ACTION;
 
 -- AGENCY (tec.tecgtfs_agency)
-LOAD DATA LOCAL INFILE '/tmp/gtfs-tec/agency.txt' INTO TABLE `tecgtfs_agency` CHARACTER SET utf8 FIELDS TERMINATED BY ',' IGNORE 1 LINES (agency_id, agency_name, agency_url, agency_timezone, agency_phone, agency_lang);
+LOAD DATA LOCAL INFILE '/tmp/gtfs-tec/agency.txt' INTO TABLE `tecgtfs_agency` CHARACTER SET utf8 FIELDS TERMINATED BY ',' ENCLOSED BY '"' IGNORE 1 LINES (agency_id, agency_name, agency_url, agency_timezone, agency_phone, agency_lang);
 
 -- ROUTES (tec.tecgtfs_routes);
-LOAD DATA LOCAL INFILE '/tmp/gtfs-tec/routes.txt' INTO TABLE `tecgtfs_routes` CHARACTER SET utf8 FIELDS TERMINATED BY ',' IGNORE 1 LINES (route_id, agency_id, route_short_name, route_long_name, route_desc, route_type, route_color, route_text_color);
+LOAD DATA LOCAL INFILE '/tmp/gtfs-tec/routes.txt' INTO TABLE `tecgtfs_routes` CHARACTER SET utf8 FIELDS TERMINATED BY ',' ENCLOSED BY '"' IGNORE 1 LINES (route_id, agency_id, route_short_name, route_long_name, route_desc, route_type, route_color, route_text_color);
 
 -- CALENDAR_DATES (tec.tecgtfs_calendar_dates)
-LOAD DATA LOCAL INFILE '/tmp/gtfs-tec/calendar_dates.txt' INTO TABLE `tecgtfs_calendar_dates` CHARACTER SET utf8 FIELDS TERMINATED BY ',' IGNORE 1 LINES (service_id, @date, exception_type)
+LOAD DATA LOCAL INFILE '/tmp/gtfs-tec/calendar_dates.txt' INTO TABLE `tecgtfs_calendar_dates` CHARACTER SET utf8 FIELDS TERMINATED BY ',' ENCLOSED BY '"' IGNORE 1 LINES (service_id, @date, exception_type)
 SET date = STR_TO_DATE(@date, '%Y%m%d');
 
 -- TRIPS (tec.tecgtfs_trips)
-LOAD DATA LOCAL INFILE '/tmp/gtfs-tec/trips.txt' INTO TABLE `tecgtfs_trips` CHARACTER SET utf8 FIELDS TERMINATED BY ',' IGNORE 1 LINES (route_id, service_id, trip_id, trip_headsign, trip_short_name, trip_long_name, direction_id, @block_id, @shape_id, wheelchair_accessible, bikes_allowed)
+LOAD DATA LOCAL INFILE '/tmp/gtfs-tec/trips.txt' INTO TABLE `tecgtfs_trips` CHARACTER SET utf8 FIELDS TERMINATED BY ',' ENCLOSED BY '"' IGNORE 1 LINES (route_id, service_id, trip_id, trip_headsign, trip_short_name, trip_long_name, direction_id, @block_id, @shape_id, wheelchair_accessible, bikes_allowed)
 SET block_id = 0+@block_id, 
 	shape_id = 0+@shape_id;
 
 -- -- STOPS (tec.tecgtfs_stops)
-LOAD DATA LOCAL INFILE '/tmp/gtfs-tec/stops.txt' INTO TABLE `tecgtfs_stops` CHARACTER SET utf8 FIELDS TERMINATED BY ',' IGNORE 1 LINES (stop_id, stop_code, stop_name, stop_lat, stop_lon, location_type, parent_station, stop_timezone, wheelchair_boarding, platform_code, @zone_id)
+LOAD DATA LOCAL INFILE '/tmp/gtfs-tec/stops.txt' INTO TABLE `tecgtfs_stops` CHARACTER SET utf8 FIELDS TERMINATED BY ',' ENCLOSED BY '"' IGNORE 1 LINES (stop_id, stop_code, stop_name, stop_lat, stop_lon, location_type, parent_station, stop_timezone, wheelchair_boarding, platform_code, @zone_id)
 SET zone_id = 0+@zone_id;
 
 -- -- STOP_TIMES (tecgtf_stop_times)
-LOAD DATA LOCAL INFILE '/tmp/gtfs-tec/stop_times.txt' INTO TABLE `tecgtfs_stop_times` CHARACTER SET utf8 FIELDS TERMINATED BY ',' IGNORE 1 LINES (trip_id, stop_sequence, stop_id, stop_headsign, arrival_time, departure_time, pickup_type, drop_off_type, timepoint, shape_dist_traveled, fare_units_traveled);
+LOAD DATA LOCAL INFILE '/tmp/gtfs-tec/stop_times.txt' INTO TABLE `tecgtfs_stop_times` CHARACTER SET utf8 FIELDS TERMINATED BY ',' ENCLOSED BY '"' IGNORE 1 LINES (trip_id, stop_sequence, stop_id, stop_headsign, arrival_time, departure_time, pickup_type, drop_off_type, timepoint, shape_dist_traveled, fare_units_traveled);
 
 -- FEED_FINO (tec.tecgtfs_feed_info)
-LOAD DATA LOCAL INFILE '/tmp/gtfs-tec/feed_info.txt' INTO TABLE `tecgtfs_feed_info` CHARACTER SET utf8 FIELDS TERMINATED BY ',' IGNORE 1 LINES (feed_publisher_name,feed_publisher_url,feed_lang,@feed_start_date,@feed_end_date,feed_version)
+LOAD DATA LOCAL INFILE '/tmp/gtfs-tec/feed_info.txt' INTO TABLE `tecgtfs_feed_info` CHARACTER SET utf8 FIELDS TERMINATED BY ',' ENCLOSED BY '"' IGNORE 1 LINES (feed_publisher_name,feed_publisher_url,feed_lang,@feed_start_date,@feed_end_date,feed_version)
 SET feed_start_date = STR_TO_DATE(@feed_start_date, '%Y%m%d'),
     feed_end_date = STR_TO_DATE(@feed_end_date, '%Y%m%d');
 
