@@ -7,7 +7,7 @@
  * @license MIT
  */
 class TECConfig {
-    public static $DB = 'mysql:host=192.168.70.70;dbname=irail-datatec';
+    public static $DB = 'mysql:host=localhost;dbname=irail-datatec';
     public static $DB_USER = 'root';
     public static $DB_PASSWORD = 'root';
 }

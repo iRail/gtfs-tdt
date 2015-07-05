@@ -7,7 +7,7 @@
  * @license MIT
  */
 class MIVBSTIBConfig {
-    public static $DB = 'mysql:host=192.168.70.70;dbname=irail-datamivbstib';
+    public static $DB = 'mysql:host=localhost;dbname=irail-datamivbstib';
     public static $DB_USER = 'root';
     public static $DB_PASSWORD = 'root';
 }
