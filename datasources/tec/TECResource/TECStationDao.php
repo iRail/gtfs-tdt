@@ -22,6 +22,7 @@ class StationDao {
 	  */
 	private $GET_ALL_STATIONS_QUERY = "SELECT stop_id, stop_code, stop_name, stop_lat, stop_lon 
 								FROM tecgtfs_stops
+								WHERE location_type = 1
 								ORDER BY stop_name ASC
 								LIMIT :offset , :rowcount;";
 								
@@ -60,7 +61,7 @@ class StationDao {
 	  */
 	private $GET_STATION_BY_ID = "SELECT stop_id, stop_code, stop_name, stop_lat, stop_lon 
 											FROM tecgtfs_stops
-											WHERE stop_id = :id;";
+											WHERE parent_station = :id;";
 											
 	/**
 	  * Query to get a station with a given station code
@@ -76,9 +77,9 @@ class StationDao {
 	  * @return array The Station with the given id
 	  */
 	public function getStationById($id) {
-		$arguments = array(":id" => intval(urldecode($id)));
+		$arguments = array(":id" => urldecode(strtolower( $id )));
 		$query = $this->GET_STATION_BY_ID;
-		
+
 		$result = R::getAll($query, $arguments);
 		return $this->parseStations($result);
 	}
@@ -102,7 +103,7 @@ class StationDao {
 	  * @param int $rowcount Number of rows to return (Optional)
 	  * @return array A List of all Stations
 	  */
-	public function getAllStations($offset=0, $rowcount=1024) {
+	public function getAllStations($offset, $rowcount) {
 		$arguments = array(":offset" => intval(urldecode($offset)), ":rowcount" => intval(urldecode($rowcount)));
 		$query = $this->GET_ALL_STATIONS_QUERY;
 

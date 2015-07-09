@@ -18,8 +18,8 @@ class TECStations{
         $this->name = null;
         $this->id = null;
         $this->code = null;
-        $this->offset = 0;
-        $this->rowcount = 1024;
+        $this->offset = null;
+        $this->rowcount = null;
     }
 
     /**
@@ -31,18 +31,6 @@ class TECStations{
      */
     public static function getParameters(){
         return array(
-            'longitude' => array(
-                'required' => false,
-                'description' => 'Longitude'
-                ),
-            'latitude' => array(
-                'required' => false,
-                'description' => 'Latitude'
-                ),
-            'name' => array(
-                'required' => false,
-                'description' => 'Name'
-                ),
             'id' => array(
                 'required' => false,
                 'description' => 'Id'
@@ -88,17 +76,22 @@ class TECStations{
      */
     public function getData(){
         $stationDao = new StationDao();
-        
-        if($this->id != null) {
+        if ($this->id != null && $this->offset == null && $this->rowcount == null) {
             return $stationDao->getStationById($this->id);
-        } else if($this->code != null) {
-            return $stationDao->getStationByCode($this->code);
-        } else if($this->longitude != null && $this->latitude != null) {
-            return $stationDao->getClosestStations($this->longitude, $this->latitude);
-        } else if ($this->name != null) {
-            return $stationDao->getStationsByName($this->name, $this->offset, $this->rowcount);
+        } else if ($this->id != null && $this->rowcount != null) {
+            return $stationDao->getAllStations($this->offset, $this->rowcount);
+        } else if ($this->id != null && $this->offset != null) {
+            return $stationDao->getAllStations($this->rowcount, $this->offset); // so strange, TDT switches
         }
-    
+        // else if($this->code != null) {
+        //     return $stationDao->getStationByCode($this->code);
+        // } else if($this->longitude != null && $this->latitude != null) {
+        //     return $stationDao->getClosestStations($this->longitude, $this->latitude);
+        // } else if ($this->name != null) {
+        //     return $stationDao->getStationsByName($this->name, $this->offset, $this->rowcount);
+        // }
+        $this->offset = 0;
+        $this->rowcount = 1028;
         return $stationDao->getAllStations($this->offset, $this->rowcount);
     }
 
